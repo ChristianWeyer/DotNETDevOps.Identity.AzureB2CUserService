@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace DotNETDevOps.Identity.AzureB2CUserService
 {
+   
     /// <summary>
     /// https://msdn.microsoft.com/Library/Azure/Ad/Graph/api/entity-and-complex-type-reference#user-entity
     /// </summary>
@@ -61,9 +62,9 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
         public string GetExtraDataString() => JToken.FromObject(_extraStuff).ToString();
 
-
-        public string Environment { get; set; }
-        public DateTimeOffset LastAuthenticationTime { get; set; }
+        
+        
     }
 
+     
 }

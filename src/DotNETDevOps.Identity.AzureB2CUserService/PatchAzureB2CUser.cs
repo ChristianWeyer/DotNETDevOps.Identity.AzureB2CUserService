@@ -11,16 +11,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         public string facsimileTelephoneNumber { get; set; }
         public SignInNames[] signInNames { get; set; }
         public string[] otherMails { get; set; }
-
         
-        public DateTimeOffset LastAuthenticationTime { get; set; }
-
-
-       
-        public string Environment { get; set; }
-
-        
-    
 
     }
 

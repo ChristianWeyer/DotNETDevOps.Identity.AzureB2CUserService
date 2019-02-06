@@ -245,7 +245,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             }
             user.otherMails = mails.ToArray();
             user.signInNames = a.ToArray();
-            user.Environment = _hostingEnvironment.EnvironmentName;
+            //user.Environment = _hostingEnvironment.EnvironmentName;
 
             return SendGraphPostRequest("/users", JsonConvert.SerializeObject(user));
         }
