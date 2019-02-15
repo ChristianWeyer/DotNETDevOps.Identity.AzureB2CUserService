@@ -82,7 +82,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
                     {
                         var roles = await azureB2CUserService.GetUserRolesAsync(context.Subject.GetSubjectId());
 
-                        context.AddRequestedClaims(roles.Value.Select(v => new Claim("role", v)));
+                       await AddRolesAsync(context, roles);
 
                     }
                 }
@@ -109,6 +109,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
                         var claims = new List<Claim>() { new Claim("oid", userId) };
 
+
                         foreach (var group in json["value"])
                             claims.Add(new Claim("role", group["displayName"].ToString(), System.Security.Claims.ClaimValueTypes.String, "Graph"));
 
@@ -122,7 +123,13 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
         }
 
+        public virtual Task AddRolesAsync(ProfileDataRequestContext context, ODataResult<string[]> roles)
+        {
+            context.AddRequestedClaims(roles.Value.Select(v => new Claim("role", v)));
 
+            return Task.CompletedTask;
+        }
+ 
     }
 
 }
