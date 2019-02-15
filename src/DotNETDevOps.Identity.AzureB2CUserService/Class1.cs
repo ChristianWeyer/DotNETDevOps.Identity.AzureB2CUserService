@@ -135,7 +135,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         //  public string appId = "c21f025e-159f-4aa8-821d-18d7f145e2f9";
 
         // private readonly Task<string> AppKey;
-        private readonly IHostingEnvironment _hostingEnvironment;
+     //   private readonly IHostingEnvironment _hostingEnvironment;
 
 
         // 
@@ -187,16 +187,14 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             IOptions<AzureB2CUserServiceConfiguration> options, 
             IHttpClientFactory httpClientFactory,
             IAzureB2CUserServiceAutenticationService azureB2CUserServiceAutenticationService, 
-            ILogger<AzureB2CUserService<T>> logger,
-            IHostingEnvironment hostingEnvironment)
+            ILogger<AzureB2CUserService<T>> logger)
         {
 
             _configuration = options.Value ?? throw new ArgumentNullException(nameof(options));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));           
             _azureB2CUserServiceAutenticationService = azureB2CUserServiceAutenticationService ?? throw new ArgumentNullException(nameof(azureB2CUserServiceAutenticationService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
-           
+          
 
         }
         public async Task<ODataResult<string[]>> GetUserRolesAsync(string objectId)
@@ -382,7 +380,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
                 var responseTxt = await response.Content.ReadAsStringAsync();
                 try
                 {
-                    return new AzureB2CResult { Error = JObject.Parse(responseTxt).SelectToken("$.odata.error").ToObject<OdataError>() };
+                    return new AzureB2CResult { Error = JObject.Parse(responseTxt)["odata.error"].ToObject<OdataError>() };
                 }
                 catch (Exception ex)
                 {
@@ -395,6 +393,8 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine((int)response.StatusCode + ": " + response.ReasonPhrase);
             Console.WriteLine("");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return new AzureB2CResult { };
 
             return new AzureB2CResult { Object = JObject.Parse(await response.Content.ReadAsStringAsync()) };
 

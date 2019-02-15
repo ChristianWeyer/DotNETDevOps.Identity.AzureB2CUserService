@@ -3,12 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNETDevOps.Identity.AzureB2CUserService", "src\DotNETDevOps.Identity.AzureB2CUserService\DotNETDevOps.Identity.AzureB2CUserService.csproj", "{29B6A1B3-24D7-4D69-A8CC-E69B99CD3CD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNETDevOps.Identity.AzureB2CUserService", "src\DotNETDevOps.Identity.AzureB2CUserService\DotNETDevOps.Identity.AzureB2CUserService.csproj", "{29B6A1B3-24D7-4D69-A8CC-E69B99CD3CD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C98F1B3-5A2E-45FC-9746-745A6AF774D3}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureB2CUserService.Tests", "test\AzureB2CUserService.Tests\AzureB2CUserService.Tests.csproj", "{ADEEDC2E-8D30-4696-A952-E63B73E5FD1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +22,10 @@ Global
 		{29B6A1B3-24D7-4D69-A8CC-E69B99CD3CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29B6A1B3-24D7-4D69-A8CC-E69B99CD3CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29B6A1B3-24D7-4D69-A8CC-E69B99CD3CD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADEEDC2E-8D30-4696-A952-E63B73E5FD1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADEEDC2E-8D30-4696-A952-E63B73E5FD1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADEEDC2E-8D30-4696-A952-E63B73E5FD1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADEEDC2E-8D30-4696-A952-E63B73E5FD1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
