@@ -75,6 +75,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
                 if (options.Schemes.Contains( context.Subject.GetIdentityProvider()))
                 { 
+
                     var str = await azureB2CUserService.GetUserByObjectIdAsync(context.Subject.GetSubjectId()); 
                     context.AddRequestedClaims(GetClaims(str.Value));
 

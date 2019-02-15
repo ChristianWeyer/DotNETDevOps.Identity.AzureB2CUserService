@@ -205,6 +205,15 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
             return new ODataResult<string[]> { Value = result.Object.SelectToken("$.value").ToObject<string[]>() };
         }
+
+        public async Task<AzureB2CResult> AddToGroupAsync(string groupId,string userId)
+        {
+            var result = await SendGraphPostRequest($"/groups/{groupId}/$links/members",JsonConvert.SerializeObject(new { url = $"{aadGraphEndpoint}{_configuration.TenantId}/directoryObjects/{userId}" }));
+
+            return result;
+        }
+
+
         public async Task<ODataResult<T>> GetUserByObjectIdAsync(string objectId)
         {
             var result = await SendGraphGetRequest("/users/" + objectId, null);
