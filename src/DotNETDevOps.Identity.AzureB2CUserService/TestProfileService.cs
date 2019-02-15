@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace DotNETDevOps.Identity.AzureB2CUserService
 {
-    public class DefaultProfileService : IProfileService
+    public class DefaultProfileService<T> : IProfileService where T: AzureB2CUser
     {
         private readonly TestProfileServiceConfiguration options;
-        private readonly AzureB2CUserService azureB2CUserService;
+        private readonly AzureB2CUserService<T> azureB2CUserService;
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, AzureB2CUserService azureB2CUserService, IAuthenticationProvider authenticationProvider, IHttpClientFactory httpClientFactory)
+        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, AzureB2CUserService<T> azureB2CUserService, IAuthenticationProvider authenticationProvider, IHttpClientFactory httpClientFactory)
         {
             this.options = options.Value ?? throw new ArgumentNullException(nameof(options));
             this.azureB2CUserService = azureB2CUserService ?? throw new ArgumentNullException(nameof(azureB2CUserService));
@@ -33,7 +33,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             context.IsActive = true;
             return Task.CompletedTask;
         }
-        public virtual IEnumerable<Claim> GetClaims(AzureB2CUser user)
+        public virtual IEnumerable<Claim> GetClaims(T user)
         {
             yield return new Claim(JwtClaimTypes.Name, user.displayName);
 

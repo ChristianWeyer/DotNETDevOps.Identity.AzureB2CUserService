@@ -117,7 +117,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
            
         }
     }
-    public class AzureB2CUserService : IResourceOwnerPasswordValidator
+    public class AzureB2CUserService<T> : IResourceOwnerPasswordValidator where T : AzureB2CUser
     {
         public static string aadInstance = "https://login.microsoftonline.com/";
         public static string aadGraphResourceId = "https://graph.windows.net/";
@@ -128,7 +128,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         private readonly AzureB2CUserServiceConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAzureB2CUserServiceAutenticationService _azureB2CUserServiceAutenticationService;
-        private readonly ILogger<AzureB2CUserService> _logger;
+        private readonly ILogger<AzureB2CUserService<T>> _logger;
 
         // private string tenant { get; set; } = "dotnetdevopsb2c.onmicrosoft.com";
 
@@ -187,7 +187,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             IOptions<AzureB2CUserServiceConfiguration> options, 
             IHttpClientFactory httpClientFactory,
             IAzureB2CUserServiceAutenticationService azureB2CUserServiceAutenticationService, 
-            ILogger<AzureB2CUserService> logger,
+            ILogger<AzureB2CUserService<T>> logger,
             IHostingEnvironment hostingEnvironment)
         {
 
@@ -205,28 +205,28 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
             return new ODataResult<string[]> { Value = result.Object.SelectToken("$.value").ToObject<string[]>() };
         }
-        public async Task<ODataResult<AzureB2CUser>> GetUserByObjectIdAsync(string objectId)
+        public async Task<ODataResult<T>> GetUserByObjectIdAsync(string objectId)
         {
             var result = await SendGraphGetRequest("/users/" + objectId, null);
-            return new ODataResult<AzureB2CUser> { Value = result.Object.ToObject<AzureB2CUser>() };
+            return new ODataResult<T> { Value = result.Object.ToObject<T>() };
         }
-        public async Task<ODataResult<AzureB2CUser>> GetUserBySigninName(string username)
+        public async Task<ODataResult<T>> GetUserBySigninName(string username)
         {
             var result = await SendGraphGetRequest("/users", $"$filter=signInNames/any(x:x/value eq '{username}')");
 
             if (result.IsError)
-                return new ODataResult<AzureB2CUser> { };
+                return new ODataResult<T> { };
 
-            var oresult = result.Object.ToObject<ODataResult<AzureB2CUser[]>>();
+            var oresult = result.Object.ToObject<ODataResult<T[]>>();
 
-            return new ODataResult<AzureB2CUser> { Value = oresult.Value.FirstOrDefault() };
+            return new ODataResult<T> { Value = oresult.Value.FirstOrDefault() };
         }
 
-        public async Task<ODataResult<AzureB2CUser[]>> GetAllUsersAsync(string query = null)
+        public async Task<ODataResult<T[]>> GetAllUsersAsync(string query = null)
         {
             var result = await SendGraphGetRequest("/users", query);
 
-            return result.Object.ToObject<ODataResult<AzureB2CUser[]>>();
+            return result.Object.ToObject<ODataResult<T[]>>();
         }
 
         public Task<AzureB2CResult> CreateUserAsync(AzureB2CUser user)
