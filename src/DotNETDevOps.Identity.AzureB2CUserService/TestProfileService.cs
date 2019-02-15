@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace DotNETDevOps.Identity.AzureB2CUserService
 {
-    public class TestProfileService : IProfileService
+    public class DefaultProfileService : IProfileService
     {
         private readonly TestProfileServiceConfiguration options;
         private readonly AzureB2CUserService azureB2CUserService;
         private readonly IAuthenticationProvider authenticationProvider;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public TestProfileService(IOptions<TestProfileServiceConfiguration> options, AzureB2CUserService azureB2CUserService, IAuthenticationProvider authenticationProvider, IHttpClientFactory httpClientFactory)
+        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, AzureB2CUserService azureB2CUserService, IAuthenticationProvider authenticationProvider, IHttpClientFactory httpClientFactory)
         {
             this.options = options.Value ?? throw new ArgumentNullException(nameof(options));
             this.azureB2CUserService = azureB2CUserService ?? throw new ArgumentNullException(nameof(azureB2CUserService));
@@ -33,7 +33,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             context.IsActive = true;
             return Task.CompletedTask;
         }
-        public static IEnumerable<Claim> GetClaims(AzureB2CUser user)
+        public virtual IEnumerable<Claim> GetClaims(AzureB2CUser user)
         {
             yield return new Claim(JwtClaimTypes.Name, user.displayName);
 
@@ -44,21 +44,21 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
             if (user.facsimileTelephoneNumber.IsPresent()) 
                 yield return new Claim(JwtClaimTypes.PhoneNumber, user.facsimileTelephoneNumber);
-
+            
            
 
         }
 
-        private static Claim GetClaim(JObject user, string scope, string prop)
-        {
-            var value = user.SelectToken(prop)?.ToString();
-            if (string.IsNullOrEmpty(value))
-                return null;
-            return new Claim(scope, value);
-        }
+        //private static Claim GetClaim(JObject user, string scope, string prop)
+        //{
+        //    var value = user.SelectToken(prop)?.ToString();
+        //    if (string.IsNullOrEmpty(value))
+        //        return null;
+        //    return new Claim(scope, value);
+        //}
 
 
-        public async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public virtual async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             //TODO : No userinfo endpoint, so we have to parse the AAD object to claims. 
             //TODO : Create custome attributes in AAD.
