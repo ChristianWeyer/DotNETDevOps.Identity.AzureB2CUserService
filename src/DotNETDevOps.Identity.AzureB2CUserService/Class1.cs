@@ -254,7 +254,11 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             user.signInNames = a.ToArray();
             //user.Environment = _hostingEnvironment.EnvironmentName;
 
-            return SendGraphPostRequest("/users", JsonConvert.SerializeObject(user));
+            return SendGraphPostRequest("/users", JsonConvert.SerializeObject(user,new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        }
+        public async Task<AzureB2CResult> SetPasswordAsync(string objectId, string newPassword)
+        {
+            return await SendGraphPatchRequest($"/users/{objectId}", JsonConvert.SerializeObject(new { passwordProfile = new PasswordProfile { forceChangePasswordNextLogin = false, password = newPassword } }));
         }
 
         private JsonSerializerSettings settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore };
