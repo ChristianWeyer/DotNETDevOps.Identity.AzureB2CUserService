@@ -243,7 +243,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             return result.Object.ToObject<ODataResult<T[]>>();
         }
 
-        public Task<AzureB2CResult> CreateUserAsync(AzureB2CUser user)
+        public Task<AzureB2CResult> CreateUserAsync(T user)
         {
             var a = new List<SignInNames>(user.signInNames);
             var mails = new List<string>();
