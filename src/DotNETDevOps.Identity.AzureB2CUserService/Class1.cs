@@ -211,6 +211,13 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             return result;
         }
 
+        public async Task<AzureB2CResult> RemoveFromGroupAsync(string groupId, string userId)
+        {
+            var result = await SendGraphDeleteRequest($"/groups/{groupId}/$links/members/{userId}");
+
+            return result;
+        }
+
 
         public async Task<ODataResult<T>> GetUserByObjectIdAsync(string objectId)
         {
@@ -285,7 +292,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             return SendGraphPatchRequest("/users/" + objectId, JsonConvert.SerializeObject(user, settings: settings));
         }
 
-        public async Task<string> DeleteUser(string objectId)
+        public async Task<AzureB2CResult> DeleteUser(string objectId)
         {
             return await SendGraphDeleteRequest("/users/" + objectId);
         }
@@ -295,7 +302,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             return SendGraphPostRequest("/applications/" + objectId + "/extensionProperties", body);
         }
 
-        public async Task<string> UnregisterExtension(string appObjectId, string extensionObjectId)
+        public async Task<AzureB2CResult> UnregisterExtension(string appObjectId, string extensionObjectId)
         {
             return await SendGraphDeleteRequest("/applications/" + appObjectId + "/extensionProperties/" + extensionObjectId);
         }
@@ -310,7 +317,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             return await SendGraphGetRequest("/applications", query);
         }
 
-        private async Task<string> SendGraphDeleteRequest(string api)
+        private async Task<AzureB2CResult> SendGraphDeleteRequest(string api)
         {
             // NOTE: This client uses ADAL v2, not ADAL v4
           //  AuthenticationResult result = await authContext.AcquireTokenAsync(aadGraphResourceId, await credential);
@@ -322,20 +329,15 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             HttpResponseMessage response = await http.SendAsync(request);
 
             _logger.LogInformation("Sending Delete request: {url}",url);
-             
+
 
             if (!response.IsSuccessStatusCode)
             {
-                string error = await response.Content.ReadAsStringAsync();
-                object formatted = JsonConvert.DeserializeObject(error);
-                throw new WebException("Error Calling the Graph API: \n" + JsonConvert.SerializeObject(formatted, Formatting.Indented));
+                return new AzureB2CResult { Error = JObject.Parse(await response.Content.ReadAsStringAsync())["odata.error"].ToObject<OdataError>() };
             }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine((int)response.StatusCode + ": " + response.ReasonPhrase);
-            Console.WriteLine("");
-
-            return await response.Content.ReadAsStringAsync();
+            return new AzureB2CResult();
+ 
         }
 
         private async Task<AzureB2CResult> SendGraphPatchRequest(string api, string json)
