@@ -47,6 +47,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         public string department { get; set; }
         public string employeeId { get; set; }
         public string facsimileTelephoneNumber { get; set; }
+        public string mobile { get; set; }
         public string givenName { get; set; }
         public string surname { get; set; }
         public string mail { get; set; }
