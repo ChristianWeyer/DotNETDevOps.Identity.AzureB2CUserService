@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.Graph.Core" Version="1.12.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.5.1" />
+    <PackageReference Include="S-Innovations.Azure.TableStorageRepository" Version="4.0.0-pre-2019030301" />
   </ItemGroup>
 
 </Project>
