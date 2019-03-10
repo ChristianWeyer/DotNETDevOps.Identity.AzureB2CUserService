@@ -11,22 +11,25 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNETDevOps.Identity.AzureB2CUserService
 {
     public class DefaultProfileService<T> : IProfileService where T: AzureB2CUser
     {
         private readonly TestProfileServiceConfiguration options;
-        private readonly AzureB2CUserService<T> azureB2CUserService;
-        private readonly IAuthenticationProvider authenticationProvider;
+      //  private readonly AzureB2CUserService<T> azureB2CUserService;
+       // private readonly IAuthenticationProvider authenticationProvider;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IServiceProvider serviceProvider;
 
-        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, AzureB2CUserService<T> azureB2CUserService, IAuthenticationProvider authenticationProvider, IHttpClientFactory httpClientFactory)
+        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, IHttpClientFactory httpClientFactory, IServiceProvider serviceProvider)
         {
             this.options = options.Value ?? throw new ArgumentNullException(nameof(options));
-            this.azureB2CUserService = azureB2CUserService ?? throw new ArgumentNullException(nameof(azureB2CUserService));
-            this.authenticationProvider = authenticationProvider ?? throw new ArgumentNullException(nameof(authenticationProvider));
+         //   this.azureB2CUserService = azureB2CUserService ?? throw new ArgumentNullException(nameof(azureB2CUserService));
+          //  this.authenticationProvider = authenticationProvider ?? throw new ArgumentNullException(nameof(authenticationProvider));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.serviceProvider = serviceProvider;
         }
         public Task IsActiveAsync(IsActiveContext context)
         {
@@ -74,9 +77,10 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
                 }
 
                 if (options.Schemes.Contains( context.Subject.GetIdentityProvider()))
-                { 
+                {
+                    AzureB2CUserService<T> azureB2CUserService = serviceProvider.GetRequiredService<AzureB2CUserService<T>>();
 
-                    var str = await azureB2CUserService.GetUserByObjectIdAsync(context.Subject.GetSubjectId()); 
+                   var str = await azureB2CUserService.GetUserByObjectIdAsync(context.Subject.GetSubjectId()); 
                     context.AddRequestedClaims(GetClaims(str.Value));
 
                     if (context.RequestedClaimTypes.Contains("role"))
@@ -101,7 +105,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
                         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
 
-                        await authenticationProvider.AuthenticateRequestAsync(request);
+                        await serviceProvider.GetRequiredService< IAuthenticationProvider>().AuthenticateRequestAsync(request);
 
                         HttpResponseMessage response = await httpClientFactory.CreateClient().SendAsync(request);
 
