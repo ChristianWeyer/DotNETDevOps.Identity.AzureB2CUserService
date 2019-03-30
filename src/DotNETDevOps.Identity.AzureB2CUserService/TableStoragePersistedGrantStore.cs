@@ -44,7 +44,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
 
             modelbuilder.Entity<DeviceCodeWrapper>()
                .HasKeys(k => new {  k.UserCode,  k.DeviceCode })
-               .WithIndex(k => new { k.DeviceCode }, true, "devicecodestore", "devicecodes")
+               .WithIndex(k => new { k.DeviceCode, k.UserCode }, true, "devicecodestore", "devicecodes")
                .WithKeyTransformation(k => k.DeviceCode, FixPartitionKey,"PartitionKey")
                .WithKeyTransformation(k => k.UserCode, FixPartitionKey, "PartitionKey")
                .WithPropertyOf(k=>k.Item,deserializer:Deserialize, serializer:Serialize)
@@ -95,8 +95,8 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             var wrap= await this.deviceFlowStoreContext.DeviceCodes.WithPrefix($"devicecodes__{DeviceFlowStoreContext.FixPartitionKey(deviceCode)}").FirstOrDefaultAsync();
             if (wrap?.Item != null)
             {
-                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"devicecodes__{DeviceFlowStoreContext.FixPartitionKey(deviceCode)}", "") { ETag = "*" }));
-                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"{DeviceFlowStoreContext.FixPartitionKey(wrap.UserCode)}", "") { ETag = "*" }));
+                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"devicecodes__{DeviceFlowStoreContext.FixPartitionKey(deviceCode)}__{DeviceFlowStoreContext.FixPartitionKey(wrap.UserCode)}", "") { ETag = "*" }));
+                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"{DeviceFlowStoreContext.FixPartitionKey(wrap.UserCode)}__{DeviceFlowStoreContext.FixPartitionKey(wrap.DeviceCode)}", "") { ETag = "*" }));
             }
 
         }
