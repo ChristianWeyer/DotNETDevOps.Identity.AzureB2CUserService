@@ -76,20 +76,23 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         public async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
            var wrap=await this.deviceFlowStoreContext.DeviceCodes.WithPrefix($"devicecodes__{deviceCode}").FirstOrDefaultAsync();
-            return wrap.Item;
+            return wrap?.Item;
         }
 
         public async Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
             var wrap=await this.deviceFlowStoreContext.DeviceCodes.Where(c=>c.UserCode==userCode) .FirstOrDefaultAsync();
-            return wrap.Item;
+            return wrap?.Item;
         }
 
         public async Task RemoveByDeviceCodeAsync(string deviceCode)
         {
             var wrap= await this.deviceFlowStoreContext.DeviceCodes.WithPrefix($"devicecodes__{deviceCode}").FirstOrDefaultAsync();
-            await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"devicecodes__{deviceCode}", "") { ETag = "*" }));
-            await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"{wrap.UserCode}", "") { ETag = "*" }));
+            if (wrap?.Item != null)
+            {
+                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"devicecodes__{deviceCode}", "") { ETag = "*" }));
+                await this.deviceFlowStoreContext.DeviceCodes.Table.ExecuteAsync(TableOperation.Delete(new TableEntity($"{wrap.UserCode}", "") { ETag = "*" }));
+            }
 
         }
 
@@ -102,8 +105,11 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
         public async Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
         {
             var wrap = await this.deviceFlowStoreContext.DeviceCodes.Where(c => c.UserCode == userCode).FirstOrDefaultAsync();
-            this.deviceFlowStoreContext.DeviceCodes.Add(new DeviceCodeWrapper { DeviceCode = wrap.DeviceCode, UserCode = userCode, Item = data });
-            await this.deviceFlowStoreContext.SaveChangesAsync();
+            if (wrap?.Item != null)
+            {
+                this.deviceFlowStoreContext.DeviceCodes.Add(new DeviceCodeWrapper { DeviceCode = wrap.DeviceCode, UserCode = userCode, Item = data });
+                await this.deviceFlowStoreContext.SaveChangesAsync();
+            }
         }
     }
     public class TableStoragePersistedGrantStore : IPersistedGrantStore
