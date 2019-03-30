@@ -15,15 +15,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNETDevOps.Identity.AzureB2CUserService
 {
+    
     public class DefaultProfileService<T> : IProfileService where T: AzureB2CUser
     {
-        private readonly TestProfileServiceConfiguration options;
+        private readonly DefaultProfileServiceOptions options;
       //  private readonly AzureB2CUserService<T> azureB2CUserService;
        // private readonly IAuthenticationProvider authenticationProvider;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IServiceProvider serviceProvider;
 
-        public DefaultProfileService(IOptions<TestProfileServiceConfiguration> options, IHttpClientFactory httpClientFactory, IServiceProvider serviceProvider)
+        public DefaultProfileService(IOptions<DefaultProfileServiceOptions> options, IHttpClientFactory httpClientFactory, IServiceProvider serviceProvider)
         {
             this.options = options.Value ?? throw new ArgumentNullException(nameof(options));
          //   this.azureB2CUserService = azureB2CUserService ?? throw new ArgumentNullException(nameof(azureB2CUserService));
@@ -31,7 +32,7 @@ namespace DotNETDevOps.Identity.AzureB2CUserService
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.serviceProvider = serviceProvider;
         }
-        public Task IsActiveAsync(IsActiveContext context)
+        public virtual Task IsActiveAsync(IsActiveContext context)
         {
             context.IsActive = true;
             return Task.CompletedTask;
